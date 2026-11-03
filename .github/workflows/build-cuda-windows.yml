@@ -39,13 +39,7 @@ jobs:
           # CTK >= 13.5 bundles CCCL >= 3.5; omit GGML_CUDA_CCCL_VERSION for those versions.
           - cuda: '12.4'
             arch: x64
-            defines: '-DGGML_CUDA_CCCL_VERSION=v3.4.3'
-          - cuda: '13.4'
-            arch: x64
-            defines: '-DGGML_CUDA_CCCL_VERSION=v3.4.3'
-          - cuda: '13.4'
-            arch: arm64
-            defines: '-DGGML_CUDA_CCCL_VERSION=v3.4.3 -DCMAKE_TOOLCHAIN_FILE=cmake/arm64-windows-msvc-cuda.cmake'
+            defines: '-DGGML_CUDA_CCCL_VERSION=v3.4.3 -DCMAKE_CUDA_ARCHITECTURES=60'
 
     steps:
       - name: Clone
@@ -187,3 +181,10 @@ jobs:
         with:
           #key: release-windows-2022-x64-hip-${{ env.ROCM_VERSION }}-${{ matrix.name }}
           key: cuda-windows-2022-x64-hip-${{ env.ROCM_VERSION }}-${{ matrix.name }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: llama-windows-cuda-${{ matrix.cuda }}-${{ matrix.arch }}
+          path: build/bin/Release/
+          if-no-files-found: error
